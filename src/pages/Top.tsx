@@ -6,6 +6,8 @@ const Top = () => {
           <h1>Top</h1>
           <nav>
             <Link to="/Game">Game</Link>
+            <br />
+            <Link to="/Trains">Trains</Link>
           </nav>
       </div>
   )

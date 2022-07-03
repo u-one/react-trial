@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Repeat } from 'typescript-tuple'
 
 type SquareState = 'O' | 'X' | null
 
@@ -13,11 +14,8 @@ const Square = (props: SquareProps) => (
   </button>
 )
 
-type BoardState = [
-  SquareState, SquareState, SquareState,
-  SquareState, SquareState, SquareState,
-  SquareState, SquareState, SquareState]
-
+type BoardState = Repeat<SquareState, 9>
+  
 type BoardProps = {
   squares: BoardState
   onClick: (i: number) => void

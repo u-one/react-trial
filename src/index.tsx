@@ -1,6 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import { createSecureContext } from 'tls'
 import './index.css'
+import { useState } from 'react'
 
 type SquareState = 'O' | 'X' | null
 
@@ -10,97 +12,104 @@ type SquareProps = {
 }
 
 const Square = (props: SquareProps) => (
-  <button 
-        className="square" 
-        onClick={() => props.onClick} >
-        {props.value}
-      </button>
-
+  <button className="square" onClick={props.onClick} >
+    {props.value}
+  </button>
 )
 
-class Square extends React.Component {
-  render() {
-    return (
-          );
-  }
+type BoardState = [
+  SquareState, SquareState, SquareState,
+  SquareState, SquareState, SquareState,
+  SquareState, SquareState, SquareState]
+
+type BoardProps = {
+  squares: BoardState
+  onClick: (i: number) => void
 }
 
-class Board extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      squares: Array(9).fill(null),
-      xIsNext: true,
-    };
-  }
-  handleClick(i) {
-    const squares = this.state.squares.slice();
-    if (calculateWinner(squares) || squares[i]) {
-      return;
-    }
-    squares[i] = this.state.xIsNext ? 'X' : 'O';
-    this.setState({
-      squares: squares,
-      xIsNext: !this.state.xIsNext,
-    });
-  }
-  renderSquare(i: Number) {
-    return <Square
-     value={this.state.squares[i]}
-     onClick={() => this.handleClick(i)}
-    />;
-  }
+const Board = (props: BoardProps) => {
+  const renderSquare = (i: number) => (
+    <Square value={props.squares[i]} onClick={() => props.onClick(i)} />
+  )
 
-  render() {
-    const winner = calculateWinner(this.state.squares);
-    let status;
-    if (winner) {
-      status = 'Winner: ' + winner;
-    } else {
-      status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
-    }
-    return (
-      <div>
-        <div className="status">{status}</div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
+  return (
+    <div>
+      <div className="board-row">
+        {renderSquare(0)}
+        {renderSquare(1)}
+        {renderSquare(2)}
       </div>
-    );
-  }
+      <div className="board-row">
+        {renderSquare(3)}
+        {renderSquare(4)}
+        {renderSquare(5)}
+      </div>
+      <div className="board-row">
+        {renderSquare(6)}
+        {renderSquare(7)}
+        {renderSquare(8)}
+      </div>
+    </div>
+  )
 }
 
-class Game extends React.Component {
-  render() {
-    return (
-      <div className="game">
-        <div className="game-board">
-          <Board />
-        </div>
-        <div className="game-info">
-          <div>{/* status */}</div>
-          <ol>{/* TODO */}</ol>
-        </div>
-      </div>
-    );
+type GameState = {
+  readonly squares: BoardState
+  readonly xIsNext: boolean
+}
+
+const Game = () => {
+  const [state, setState] = useState<GameState>({
+    squares: [null, null, null, null, null, null, null, null, null],
+    xIsNext: true,
+  })
+
+  const current = state
+  const winner = calculateWinner(current.squares)
+  let status: string
+  if (winner) {
+    status = 'Winner: ' + winner;
+  } else {
+    status = 'Next player: ' + (current.xIsNext ? 'X' : 'O');
   }
+
+  const handleClick = (i: number) => {
+
+    const next: GameState = (({ squares, xIsNext }) => {
+      const nextSquares = squares.slice() as BoardState
+      nextSquares[i] = xIsNext ? 'X' : 'O'
+      return {
+        squares: nextSquares,
+        xIsNext: !xIsNext,
+      }
+    })(current)
+
+    setState(({squares, xIsNext}) => {
+      return {
+        squares: next.squares,
+        xIsNext: next.xIsNext
+      }
+    })
+
+  }
+
+
+  return (
+    <div className="game">
+      <div className="game-board">
+        <Board squares={current.squares} onClick={handleClick} />
+      </div>
+      <div className="game-info">
+        <div>{status}</div>
+        <ol>{/* TODO */}</ol>
+      </div>
+    </div>
+  )
 }
 
 // ========================================
 
-const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement );
+const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 root.render(
   <React.StrictMode>
     <Game />
@@ -109,7 +118,7 @@ root.render(
 
 
 
-function calculateWinner(squares) {
+function calculateWinner(squares: BoardState) {
   const lines = [
     [0, 1, 2],
     [3, 4, 5],

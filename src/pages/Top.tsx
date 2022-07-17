@@ -10,7 +10,8 @@ const Top = () => {
             <Link to="/Trains">Trains</Link>
             <br />
             <Link to="/TrainModels">TrainModels</Link>
-
+            <br />
+            <Link to="/TrainModel">TrainModel</Link>
           </nav>
       </div>
   )

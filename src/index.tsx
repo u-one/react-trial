@@ -6,7 +6,7 @@ import Top from './pages/Top'
 import Game from './pages/Game'
 import Trains from './pages/Trains'
 import TrainModels from './pages/TrainModels'
-import TrainModel from './pages/TrainModel'
+import TrainModelDetail from './pages/TrainModelDetail'
 
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
@@ -18,7 +18,7 @@ root.render(
         <Route path="/game" element={<Game />} />
         <Route path="/trains" element={<Trains />} />
         <Route path="/trainmodels" element={<TrainModels />} />
-        <Route path="/trainmodel/:trainModelId" element={<TrainModel />} />
+        <Route path="/trainmodel/:trainModelId" element={<TrainModelDetail />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

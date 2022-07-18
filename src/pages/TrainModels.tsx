@@ -1,6 +1,5 @@
-import React from "react"
+import { useState, useEffect } from "react"
 import { styled } from '@mui/material/styles';
-import axios from "axios"
 import { Link } from "react-router-dom"
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -9,9 +8,8 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-
-
-const baseUrl = "https://uone-train-model-manager-dev.herokuapp.com/api/trainmodel/all"
+import { TrainModel } from "../types/TrainModel";
+import { trainModelApi } from "../libs/webapiClient";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -35,55 +33,12 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 type TrainResponse = TrainModel[]
 
-type TrainModel = {
-    trainModelId: number,
-    category: string,
-    series: string,
-    name: string,
-    productName: string,
-    productType: number,
-    maker: string,
-    productCode: string,
-    price: number,
-    jan: number,
-    obtainedPrice: number,
-    obtainedPriceWithTax: number,
-    obtainedPlace: string,
-    obtainedDate: string,
-    obtainedType: number,
-    manageId: string,
-    comment: string,
-    tags: string
-}
-
 const TrainModels = () => {
-    const [trains, setTrains] = React.useState<TrainResponse>(
-        [
-            {
-                trainModelId: 0,
-                category: "",
-                series: "",
-                name: "",
-                productName: "",
-                productType: 0,
-                maker: "",
-                productCode: "",
-                price: 0,
-                jan: 0,
-                obtainedPrice: 0,
-                obtainedPriceWithTax: 0,
-                obtainedPlace: "",
-                obtainedDate: "",
-                obtainedType: 0,
-                manageId: "",
-                comment: "",
-                tags: ""
-            }
-        ]
-    )
 
-    React.useEffect(() => {
-        axios.get(baseUrl).then((reponse) => {
+    const [trains, setTrains] = useState<TrainResponse>()
+
+    useEffect(() => {
+        trainModelApi.get<TrainResponse>("all").then((reponse) => {
             setTrains(reponse.data)
         })
     }, [])
@@ -118,8 +73,8 @@ const TrainModels = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {trains.map((row) => (
-                            <StyledTableRow key={row.name}>
+                        {trains?.map((row) => (
+                            <StyledTableRow key={row.trainModelId}>
                                 <TableCell component="th" scope="row">
                                     {row.trainModelId}
                                 </TableCell>

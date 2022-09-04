@@ -1,3 +1,13 @@
+# React Trial App
+
+
+## Debug
+
+To debug, start debug with "debug react" configuration.
+
+To start react in background without browser, exec "start-react" Task.
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
